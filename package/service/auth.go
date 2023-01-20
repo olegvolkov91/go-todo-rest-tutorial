@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	salt       = "1klnld90131jDS#SL!S(($"
-	signingKey = "S*$D!!:SKF()sdfds)#KD!"
+	salt       = "hjqrhjqw124617ajfhajs"
+	signingKey = "qrkjk#4#35FSFJlja#4353KSFjH"
 	tokenTTL   = 12 * time.Hour
 )
 
@@ -27,7 +27,7 @@ type AuthService struct {
 }
 
 func NewAuthService(repo repository.Authorization) *AuthService {
-	return &AuthService{repo}
+	return &AuthService{repo: repo}
 }
 
 func (s *AuthService) CreateUser(user todo.User) (int, error) {
@@ -48,6 +48,7 @@ func (s *AuthService) GenerateToken(username, password string) (string, error) {
 		},
 		user.Id,
 	})
+
 	return token.SignedString([]byte(signingKey))
 }
 
@@ -56,17 +57,16 @@ func (s *AuthService) ParseToken(accessToken string) (int, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")
 		}
+
 		return []byte(signingKey), nil
 	})
-
 	if err != nil {
 		return 0, err
 	}
 
 	claims, ok := token.Claims.(*tokenClaims)
-
 	if !ok {
-		return 0, errors.New("token claims are not of type")
+		return 0, errors.New("token claims are not of type *tokenClaims")
 	}
 
 	return claims.UserId, nil
